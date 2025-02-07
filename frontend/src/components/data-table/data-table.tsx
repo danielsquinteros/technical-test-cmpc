@@ -161,8 +161,8 @@ export function DataTable<TData, TValue>({
           })
         }
         if(isSuccessCreateProduct || isSuccessUpdateProduct){
-          const descriptionCreate = isSuccessCreateProduct && 'Creado correctamente'; 
-          const descriptionUpdate = isSuccessUpdateProduct && 'Actualizado correctamente'; 
+          const descriptionCreate = isSuccessCreateProduct && 'Successfully created'; 
+          const descriptionUpdate = isSuccessUpdateProduct && 'Successfully updated'; 
           toast({
             title: 'Satisfactorio',
             description: descriptionCreate || descriptionUpdate,
