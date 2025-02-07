@@ -7,8 +7,10 @@ import {
   MinLength,
   IsEnum,
 } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateProductDto {
+  @ApiProperty({ example: 'Laptop', description: 'Nombre del producto' })
   @IsString()
   @MinLength(1)
   name: string;

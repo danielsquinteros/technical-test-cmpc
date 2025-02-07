@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   ColumnDef,
   flexRender,
@@ -45,8 +45,8 @@ export function DataTable<TData, TValue>({
 }: DataTableProps<TData, TValue>) {
   const { toast } = useToast()
   const {refetch: refetchGetAllProducts } = useFindAllProductsQuery({})
-  const [ createProduct, { reset: resetCreateProduct }] = useCreateProductMutation();
-  const [ updateProduct, { reset: resetUpdateProduct }] = useUpdateProductMutation();
+  const [ createProduct, { isError: isErrorCreateProduct, error: errorCreateProduct, isSuccess: isSuccessCreateProduct,  reset: resetCreateProduct }] = useCreateProductMutation();
+  const [ updateProduct, { isError: isErrorUpdateProduct, error: errorUpdateProduct, isSuccess: isSuccessUpdateProduct,  reset: resetUpdateProduct }] = useUpdateProductMutation();
   const [ removeProduct ] = useRemoveProductMutation();
   
   
@@ -131,67 +131,45 @@ export function DataTable<TData, TValue>({
 
   const actionProduct = () => {
     if(dialogProduct.action === 'create'){
-      try {
-        createProduct(form);
-        toast({
-          title: "Acción completada",
-          description: "Se ha creado correctamente.",
-          variant: "success",
-        });
+      createProduct(form).then(() => {
         setTimeout(() => {
           resetCreateProductRef.current();
         }, 2000);
         refetchGetAllProducts();
-      } catch (error) {
-        console.log(error);
-        toast({
-          title: 'Error',
-          description: "Ocurrió un problema al crear.",
-          variant: "error",
-        });
-      }
+      })
     }
     if(dialogProduct.action === 'update'){
-      try {
-        updateProduct(form);
-        toast({
-          title: "Acción completada",
-          description: "Se ha actulizado correctamente.",
-          variant: "success",
+        updateProduct(form).then(()=> {
+          setTimeout(() => {
+            resetUpdateProductRef.current();
+          }, 2000);
+          refetchGetAllProducts();
         });
-        setTimeout(() => {
-          resetUpdateProductRef.current();
-        }, 2000);
-        refetchGetAllProducts();
-      } catch (error) {
-        console.log(error);
-        toast({
-          title: 'Error',
-          description: "Ocurrió un problema al crear.",
-          variant: "error",
-        });
-      }
     }
     if(dialogProduct.action === 'delete'){
-      try {
-        removeProduct(form);
-        toast({
-          title: "Acción completada",
-          description: "Se ha eliminado correctamente.",
-          variant: "success",
-        });
-        refetchGetAllProducts();
-      } catch (error) {
-        console.log(error);
-        toast({
-          title: 'Error',
-          description: "Ocurrió un problema al crear.",
-          variant: "error",
+        removeProduct(form).then(() => {
+          refetchGetAllProducts();
         });
       }
     }
-    
-  }
+    useEffect(() => {
+        if(isErrorCreateProduct || isErrorUpdateProduct){
+          toast({
+            title: 'Error',
+            description: `${JSON.stringify(errorCreateProduct) || JSON.stringify(errorUpdateProduct)}`,
+            variant: 'error'
+          })
+        }
+        if(isSuccessCreateProduct || isSuccessUpdateProduct){
+          const descriptionCreate = isSuccessCreateProduct && 'Creado correctamente'; 
+          const descriptionUpdate = isSuccessUpdateProduct && 'Actualizado correctamente'; 
+          toast({
+            title: 'Satisfactorio',
+            description: descriptionCreate || descriptionUpdate,
+            variant: 'success'
+          })
+        }
+    }, [errorCreateProduct, errorUpdateProduct, isErrorCreateProduct, isErrorUpdateProduct, isSuccessCreateProduct, isSuccessUpdateProduct, toast])
 
   return (
     <div className="d-flex">
