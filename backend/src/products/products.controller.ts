@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import {
   Controller,
   Get,
@@ -36,6 +37,8 @@ export class ProductsController {
   }
 
   @Get()
+  @ApiOperation({ summary: 'Obtener productos' })
+  @ApiResponse({ status: 200, description: 'Productos obtenido', type: Product, isArray: true })
   findAll(): Product[] {
     try {
       return this.productsService.findAll();
@@ -48,6 +51,8 @@ export class ProductsController {
   }
 
   @Get(':id')
+  @ApiOperation({ summary: 'Obtener un producto' })
+  @ApiResponse({ status: 200, description: 'Producto obtenido', type: Product })
   findOne(@Param('id', ParseUUIDPipe) id: string): Product {
     try {
       const product = this.productsService.findOneById(id);
@@ -64,10 +69,9 @@ export class ProductsController {
   }
 
   @Patch(':id')
-  update(
-    @Param('id', ParseUUIDPipe) id: string,
-    @Body() updateProductDto: UpdateProductDto,
-  ): Product {
+  @ApiOperation({ summary: 'Actualizar un producto' })
+  @ApiResponse({ status: 200, description: 'Producto actualizado', type: Product })
+  update(@Param('id', ParseUUIDPipe) id: string, @Body() updateProductDto: UpdateProductDto): Product {
     try {
       const updatedProduct = this.productsService.update(id, updateProductDto);
       if (!updatedProduct) {
@@ -83,6 +87,8 @@ export class ProductsController {
   }
 
   @Delete(':id')
+  @ApiOperation({ summary: 'Eliminar un producto' })
+  @ApiResponse({ status: 200, description: 'Producto eliminado', type: Product })
   remove(@Param('id', ParseUUIDPipe) id: string): Product {
     try {
       const deletedProduct = this.productsService.remove(id);
