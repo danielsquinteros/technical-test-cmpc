@@ -1,4 +1,4 @@
-# Backend - Technical Test CMPC
+# Frontend - Technical Test CMPC
 
 Este proyecto es un frontend desarrollado con:
 - React
